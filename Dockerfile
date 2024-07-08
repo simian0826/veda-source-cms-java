@@ -5,7 +5,7 @@ ENV PROJECT_NAME=veda-source-java
 WORKDIR /${PROJECT_NAME}
 COPY . .
 # cache dependency
-RUN --mount=type=cache,target=/root/.m2 mvn -s setting/settings.xml clean install -pl veda-cms -T 1C -U -Dmaven.compile.fork=true -Dmaven.test.skip -Dorg.slf4j.simpleLogger.defaultLogLevel=warn -B -X
+RUN --mount=type=cache,target=/root/.m2 mvn clean install -pl veda-cms -T 1C -U -Dmaven.compile.fork=true -Dmaven.test.skip -Dorg.slf4j.simpleLogger.defaultLogLevel=warn -B -X
 
 FROM openjdk:17-jdk-slim
 
