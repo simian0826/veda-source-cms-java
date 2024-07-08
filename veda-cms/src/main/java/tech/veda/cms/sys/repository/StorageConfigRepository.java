@@ -1,0 +1,19 @@
+package tech.veda.cms.sys.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+import tech.veda.cms.sys.model.StorageConfig;
+
+/**
+ * @author Bruno
+ */
+@Repository
+public interface StorageConfigRepository extends JpaRepository<StorageConfig, Long> {
+
+  @Query("from StorageConfig where isDefault=true")
+  StorageConfig getDefaultConfig();
+
+  StorageConfig getByStorageId(String storageId);
+
+}

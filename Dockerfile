@@ -5,7 +5,7 @@ ENV PROJECT_NAME=veda-source-java
 WORKDIR /${PROJECT_NAME}
 COPY . .
 # cache dependency
-RUN --mount=type=cache,target=/root/.m2 mvn -s setting/settings.xml clean install -pl vedaSource-cms -T 1C -U -Dmaven.compile.fork=true -Dmaven.test.skip -Dorg.slf4j.simpleLogger.defaultLogLevel=warn -B -X
+RUN --mount=type=cache,target=/root/.m2 mvn -s setting/settings.xml clean install -pl veda-cms -T 1C -U -Dmaven.compile.fork=true -Dmaven.test.skip -Dorg.slf4j.simpleLogger.defaultLogLevel=warn -B -X
 
 FROM openjdk:17-jdk-slim
 
@@ -14,6 +14,6 @@ ARG APP_VERSION
 ENV PROJECT_NAME=veda-source-cms-java
 # workdir
 WORKDIR /${PROJECT_NAME}
-COPY --from=build /${PROJECT_NAME}/vedaSource-cms/target/vedaSource-cms-0.0.1-SNAPSHOT.jar /${PROJECT_NAME}/app.jar
+COPY --from=build /${PROJECT_NAME}/veda-cms/target/veda-cms-0.0.1-SNAPSHOT.jar /${PROJECT_NAME}/app.jar
 
 ENTRYPOINT ["sh","-c", "java -jar /${PROJECT_NAME}/app.jar --spring.profiles.active=${ENV}" ]
