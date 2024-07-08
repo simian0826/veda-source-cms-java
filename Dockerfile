@@ -1,6 +1,6 @@
 FROM maven:3.8-openjdk-17-slim AS build
 
-ENV PROJECT_NAME=veda-source
+ENV PROJECT_NAME=veda-source-java
 # workdir
 WORKDIR /${PROJECT_NAME}
 COPY . .
@@ -11,7 +11,7 @@ FROM openjdk:17-jdk-slim
 
 MAINTAINER bruno
 ARG APP_VERSION
-ENV PROJECT_NAME=veda-source
+ENV PROJECT_NAME=veda-source-cms-java
 # workdir
 WORKDIR /${PROJECT_NAME}
 COPY --from=build /${PROJECT_NAME}/vedaSource-cms/target/vedaSource-cms-0.0.1-SNAPSHOT.jar /${PROJECT_NAME}/app.jar
