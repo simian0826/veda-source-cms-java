@@ -26,7 +26,7 @@ docker run  --name huari-www -p 58081:80 -d huari/huari-www:v1.0
 cd ~/projects/huari-home-java/
 docker build -f Dockerfile -t veda-source/cms:v1.0 .
 docker stop cms-be && docker rm cms-be
-docker run  --name cms-be -e ENV=production -p 58080:8080 -v ~/files:/veda-source-cms-be/files -d veda-source/cms:v1.0
+docker run  --name cms-be -e ENV=production -p 58080:8080 -v ~/files:/veda-source-cms-java/files -d veda-source/cms:v1.0
 
 cd ~/projects/huari-home-java/
 docker build -f admin3-ui/Dockerfile -t huari/cms-be-front:v1.0 ./admin3-ui
