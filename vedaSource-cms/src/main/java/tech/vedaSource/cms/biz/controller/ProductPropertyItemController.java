@@ -1,0 +1,18 @@
+package tech.vedaSource.cms.biz.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.stereotype.Controller;
+
+/**
+ * <p>
+ *  前端控制器
+ * </p>
+ *
+ * @author Bruno
+ * @since 2024-06-22
+ */
+@Controller
+@RequestMapping("/productPropertyItem")
+public class ProductPropertyItemController {
+
+}
