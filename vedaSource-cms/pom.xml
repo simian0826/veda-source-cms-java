@@ -14,7 +14,7 @@
   <name>vedaSource-cms</name>
   <description>vedaSource-cms</description>
   <properties>
-    <java.version>21</java.version>
+    <java.version>17</java.version>
     <docker.image-name/>
     <docker.username/>
     <docker.password/>

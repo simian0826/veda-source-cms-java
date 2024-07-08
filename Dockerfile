@@ -1,4 +1,4 @@
-FROM maven:3.8-openjdk-21-slim AS build
+FROM maven:3.8-openjdk-17-slim AS build
 
 ENV PROJECT_NAME=veda-source-java
 # workdir
@@ -7,7 +7,7 @@ COPY . .
 # cache dependency
 RUN --mount=type=cache,target=/root/.m2 mvn -s setting/settings.xml clean install -pl vedaSource-cms -T 1C -U -Dmaven.compile.fork=true -Dmaven.test.skip -Dorg.slf4j.simpleLogger.defaultLogLevel=warn -B -X
 
-FROM openjdk:21-jdk-slim
+FROM openjdk:17-jdk-slim
 
 MAINTAINER bruno
 ARG APP_VERSION
