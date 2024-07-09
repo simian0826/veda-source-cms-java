@@ -1,5 +1,5 @@
 ```shell
-docker run -v "$PWD/data":/var/lib/mysql  --name mysql8 -e MYSQL_ROOT_PASSWORD=itspwd6tfc^YHN -p 53306:3306 -d mysql:8.2
+docker run -v "$PWD/data":/var/lib/mysql -m 400m --name mysql8 -e MYSQL_ROOT_PASSWORD=itspwd6tfc^YHN -p 53306:3306 -d mysql:8.2
 ```
 
 
