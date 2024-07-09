@@ -48,7 +48,7 @@ public class MySQLGenerator {
     // sys模块生成
     // 包配置
     PackageConfig sysPackageConfig = new PackageConfig.Builder()
-      .parent("tech.vedaSource.cms")
+      .parent("tech.veda.cms")
       .moduleName("sys")
       .entity("entity")
       .mapper("mapper")
@@ -83,7 +83,7 @@ public class MySQLGenerator {
     // biz模块生成
     // 包配置
     PackageConfig packageConfig = new PackageConfig.Builder()
-      .parent("tech.vedaSource.cms")
+      .parent("tech.veda.cms")
       .moduleName("biz")
       .entity("entity")
       .mapper("mapper")

@@ -1,5 +1,4 @@
 package tech.veda.cms.biz.mapper;
-
 import org.apache.ibatis.annotations.Mapper;
 import tech.veda.cms.biz.entity.GeneralConfig;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
