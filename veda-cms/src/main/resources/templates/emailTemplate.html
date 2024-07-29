@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>veda-source</title>
+</head>
+<body >
+
+<div style="box-sizing:border-box;padding: 20px; background: #222; color: #f5f5f5">
+  <h1 th:text="'There is a message send from ' + ${name} + '!'"></h1>
+  <p th:text="'Client Email: ' + ${email}"></p>
+  <p th:text="'Client Mobile: ' + ${mobile}"></p>
+  <p th:text="'Client Message: ' + ${message}" ></p>
+</div>
+
+</body>
+<style>
+  a{
+    color:yellow;
+  }
+</style>
+</html>

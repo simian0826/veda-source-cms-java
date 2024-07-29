@@ -29,13 +29,23 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
+
     InterceptorRegistration loginInterceptor = registry.addInterceptor(new AuthInterceptor(sessionService));
-    loginInterceptor.addPathPatterns("/**");
+    loginInterceptor.addPathPatterns("/**/**");
     loginInterceptor.excludePathPatterns(
       "/storage/fetch/**",
       "/storage/download/**",
       "/login",
-      "/test",
+      "/contactUs/sendMail",
+      "/generalConfig/findHomePage",
+      "/generalConfig/findAboutUsPage",
+      "/generalConfig/findBasicInfo",
+      "/dict/findProductCategory",
+      "/heroSection/findHeroSections",
+      "/product/list",
+      "/product/detail/**",
+      "/project/list",
+      "/project/detail/**",
       "/swagger-ui.html",
       "/swagger-ui/**",
       "/v3/api-docs/**",

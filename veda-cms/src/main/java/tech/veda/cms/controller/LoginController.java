@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import tech.veda.cms.biz.common.Result;
 import tech.veda.cms.sys.service.SessionService;
 import tech.veda.cms.sys.service.dto.UserinfoDTO;
 
@@ -21,14 +23,9 @@ public class LoginController {
     this.sessionService = sessionService;
   }
 
-  @GetMapping ("/test")
-  public ResponseEntity<String> test() {
-    return ResponseEntity.ok("hello");
-  }
-
   @PostMapping("/login")
-  public ResponseEntity<UserinfoDTO> login(@RequestBody @Valid LoginRequest request) {
-    return ResponseEntity.ok(sessionService.login(request.username(), request.password()));
+  public Result<UserinfoDTO> login(@RequestBody @Valid LoginRequest request) {
+    return sessionService.login(request.username(), request.password());
   }
 
   @SecurityRequirement(name = "bearerAuth")

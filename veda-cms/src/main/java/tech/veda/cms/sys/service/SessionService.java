@@ -1,6 +1,7 @@
 package tech.veda.cms.sys.service;
 
 import org.springframework.stereotype.Service;
+import tech.veda.cms.biz.common.Result;
 import tech.veda.cms.sys.service.dto.UserinfoDTO;
 
 /**
@@ -9,7 +10,7 @@ import tech.veda.cms.sys.service.dto.UserinfoDTO;
 @Service
 public interface SessionService {
 
-  UserinfoDTO login(String username, String password);
+  Result<UserinfoDTO> login(String username, String password);
 
   void logout(String token);
 

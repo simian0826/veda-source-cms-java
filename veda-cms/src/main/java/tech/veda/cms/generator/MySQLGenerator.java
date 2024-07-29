@@ -3,7 +3,6 @@ package tech.veda.cms.generator;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
-import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +24,7 @@ public class MySQLGenerator {
 
     // 全局配置
     GlobalConfig globalConfig = new GlobalConfig.Builder()
-      .outputDir(System.getProperty("user.dir") + "/vedaSource-cms" + "/src/main/java")
+      .outputDir(System.getProperty("user.dir") + "/veda-cms" + "/src/main/java")
       .author("Bruno")
       .disableOpenDir()
       .disableOpenDir()
@@ -43,7 +42,7 @@ public class MySQLGenerator {
 
   private static String SYS_TABLES = "organization,resource,role,role_resource,session,storage_config,storage_file,stored_event,user,user_credential,user_role";
 //  private static String BIZ_TABLES = "t_dict,t_content_config,t_hero_section,t_product,t_product_property,t_product_property_item,t_product_category_property_config";
-  private static String BIZ_TABLES = "t_leader";
+  private static String BIZ_TABLES = "t_project,t_project_material";
   private static void genSysModule(DataSourceConfig dataSourceConfig, GlobalConfig globalConfig, TemplateConfig templateConfig) {
     // sys模块生成
     // 包配置
@@ -98,7 +97,7 @@ public class MySQLGenerator {
       .addInclude(includes)
       .addTablePrefix("t_")
       .entityBuilder()
-      .superClass("tech.vedaSource.cms.biz.common.BaseEntity")
+      .superClass("tech.veda.cms.biz.common.BaseEntity")
       .addSuperEntityColumns("id","status", "createDate", "updateDate")
       .enableLombok()
       .enableFileOverride()

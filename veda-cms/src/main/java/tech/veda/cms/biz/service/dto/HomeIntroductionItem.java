@@ -8,6 +8,16 @@ import lombok.Data;
 @Data
 public class HomeIntroductionItem {
   private String title;
+  private String subTitle;
+  private String description;
   private String image;
-  private String detailText;
+  private IntroductionInfo infoRight;
+  private IntroductionInfo infoLeft;
+  private Integer productId;
+}
+
+@Data
+class IntroductionInfo {
+  private String info;
+  private String supplementary;
 }

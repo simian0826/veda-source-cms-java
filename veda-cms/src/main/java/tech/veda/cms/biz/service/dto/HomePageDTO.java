@@ -1,7 +1,6 @@
 package tech.veda.cms.biz.service.dto;
 
 import lombok.Data;
-import tech.veda.cms.biz.entity.Leader;
 
 import java.util.List;
 
@@ -11,10 +10,11 @@ import java.util.List;
 @Data
 public class HomePageDTO {
 
+
   private List<HomeIntroductionItem> introductionItems;
   private List<HomeProcessItem> processItems;
   private List<HomeProductionCategoryItem> productCategoryItems;
-  private List<Leader> leaders;
+  private List<Integer> leaders;
   private List<String> clientLogos;
 }
 

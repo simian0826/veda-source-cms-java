@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tech.veda.cms.biz.common.DictType;
 import tech.veda.cms.biz.common.ProductPropertyType;
 import tech.veda.cms.biz.entity.*;
 import tech.veda.cms.biz.exception.ProductException;
@@ -97,7 +98,21 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     }).toList();
 
-    PageDTO<ProductVO> result = new PageDTO(productVOs, this.count(queryProductWrapper));
+    List<ProductVO> productVO2s = new ArrayList<>();
+    for (int i = 0; i < productListRequest.getPageSize(); i++){
+
+      String[] imgs = {"y3l5i_porcelain.png", "y3l5i_porcelain.png", "y3l5i_porcelain.png"};
+      productVO2s.add(ProductVO.builder()
+        .id(1)
+        .category("Tiles")
+        .name("Product Name")
+        .description("Product Description")
+        .imgs(Arrays.asList(imgs))
+        .certificate(Arrays.asList(imgs))
+        .properties(null).build());
+    }
+
+    PageDTO<ProductVO> result = new PageDTO(productVO2s, this.count(queryProductWrapper));
     return result;
   }
 
@@ -149,7 +164,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     Product product = new Product();
 
     QueryWrapper<Dict> queryProductCategoryWrapper = new QueryWrapper<>();
-    queryProductCategoryWrapper.eq("type", "product category");
+    queryProductCategoryWrapper.eq("type", DictType.PRODUCT_CATEGORY);
 
     product.setName(productCreateRequest.getName());
 

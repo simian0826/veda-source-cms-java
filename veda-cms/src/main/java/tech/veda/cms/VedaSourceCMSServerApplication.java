@@ -7,10 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * @author lizhiying
  */
+
 @EnableAspectJAutoProxy(exposeProxy = true)
 @EnableConfigurationProperties(VedaSourceCMSProperties.class)
 @MapperScan("tech.veda.cms.*.mapper")

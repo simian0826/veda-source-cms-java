@@ -7,17 +7,10 @@ import lombok.Data;
  */
 @Data
 public class HomeProcessItem {
+
+
   private String title;
-  private String subTitle;
-  private String description;
   private String image;
-  private ProcessInfo infoRight;
-  private ProcessInfo infoLeft;
-  private Integer productId;
+  private String detailText;
 }
 
-@Data
-class ProcessInfo {
-  private String info;
-  private String supplementary;
-}

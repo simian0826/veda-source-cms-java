@@ -1,7 +1,7 @@
 package tech.veda.cms.biz.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
  * @author Bruno
  * @since 2024-06-22
  */
-@Controller
+@RestController
 @RequestMapping("/productPropertyItem")
 public class ProductPropertyItemController {
 

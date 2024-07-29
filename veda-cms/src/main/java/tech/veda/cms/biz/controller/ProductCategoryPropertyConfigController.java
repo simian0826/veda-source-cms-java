@@ -1,7 +1,13 @@
 package tech.veda.cms.biz.controller;
 
+import com.alibaba.fastjson2.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.stereotype.Controller;
+import tech.veda.cms.biz.common.Result;
+import tech.veda.cms.biz.service.IProductCategoryPropertyConfigService;
+import org.springframework.web.bind.annotation.RestController;
+
 
 /**
  * <p>
@@ -11,8 +17,16 @@ import org.springframework.stereotype.Controller;
  * @author Bruno
  * @since 2024-06-27
  */
-@Controller
-@RequestMapping("/biz/productCategoryPropertyConfig")
+@RestController
+@RequestMapping("/productCategoryPropertyConfig")
 public class ProductCategoryPropertyConfigController {
 
+  @Autowired
+  IProductCategoryPropertyConfigService productCategoryPropertyConfigService;
+
+  @GetMapping("/list")
+  public Result<JSONObject> findProductPropertyGroupByCategory() {
+
+    return Result.succ(productCategoryPropertyConfigService.findProductPropertyGroupByCategory());
+  }
 }

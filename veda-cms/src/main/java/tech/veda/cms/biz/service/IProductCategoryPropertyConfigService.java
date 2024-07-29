@@ -1,5 +1,6 @@
 package tech.veda.cms.biz.service;
 
+import com.alibaba.fastjson2.JSONObject;
 import tech.veda.cms.biz.entity.ProductCategoryPropertyConfig;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IProductCategoryPropertyConfigService extends IService<ProductCategoryPropertyConfig> {
 
+  JSONObject findProductPropertyGroupByCategory();
 }

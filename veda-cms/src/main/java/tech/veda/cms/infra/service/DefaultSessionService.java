@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import tech.veda.cms.biz.common.Result;
 import tech.veda.cms.sys.event.UserLoggedIn;
 import tech.veda.cms.sys.event.UserLoggedOut;
 import tech.veda.cms.sys.repository.UserCredentialRepository;
@@ -36,7 +37,7 @@ public class DefaultSessionService implements SessionService {
 
 
   @Override
-  public UserinfoDTO login(String username, String password) {
+  public Result<UserinfoDTO> login(String username, String password) {
     UserCredential credential = userCredentialRepository.findCredential(username, UserCredential.IdentityType.PASSWORD)
       .orElseThrow(() -> new UserException(CommonResultStatus.UNAUTHORIZED, "密码不正确"));
     if (credential.doCredentialMatch(password)) {
@@ -49,7 +50,7 @@ public class DefaultSessionService implements SessionService {
       sessionManager.store(token, credential, userinfo);
       SessionItemHolder.setItem(Constants.SESSION_CURRENT_USER, userinfo);
       DomainEventPublisher.instance().publish(new UserLoggedIn(userinfo, getClientIP()));
-      return userinfo;
+      return Result.succ(userinfo);
     } else {
       throw new UserException(CommonResultStatus.UNAUTHORIZED, "密码不正确");
     }

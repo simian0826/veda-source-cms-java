@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tech.veda.cms.biz.common.Result;
+import tech.veda.cms.biz.util.NetWorkUtil;
 import tech.veda.cms.common.authz.RequiresPermissions;
 import tech.veda.cms.sys.model.StorageConfig;
 import tech.veda.cms.sys.model.StorageFile;
@@ -16,6 +18,8 @@ import tech.veda.cms.sys.service.dto.StorageFileDTO;
 import tech.veda.cms.sys.service.StorageService;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +94,7 @@ public class StorageController {
   }
 
   @PostMapping("/upload")
-  public ResponseEntity<List<StorageFileDTO>> upload(@RequestParam(value = "storageId", required = false) String storageId,
+  public Result<List<StorageFileDTO>> upload(@RequestParam(value = "storageId", required = false) String storageId,
 													 @RequestParam("files") MultipartFile[] files, HttpServletRequest request) throws IOException {
     List<StorageFileDTO> responses = new ArrayList<>();
     // 获取服务器信息
@@ -102,23 +106,30 @@ public class StorageController {
       StorageFileDTO storageFile = storageService.store(storageId, file.getInputStream(), file.getSize(), file.getContentType(), originalFilename, domain);
       responses.add(storageFile);
     }
-    return ResponseEntity.ok(responses);
+    return Result.succ(responses);
   }
 
   @PostMapping("/uploadFiles")
-  public ResponseEntity<List<String>> uploadFiles(@RequestParam(value = "storageId", required = false) String storageId,
-                                                     @RequestParam("files") MultipartFile[] files, HttpServletRequest request) throws IOException {
+  public Result<List<String>> uploadFiles(@RequestParam(value = "storageId", required = false) String storageId,
+                                          @RequestParam("files") MultipartFile[] files, HttpServletRequest request) throws IOException {
     List<String> responses = new ArrayList<>();
-    // 获取服务器信息
-    String domain = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 
-
-    for (MultipartFile file : files) {
-      String originalFilename = file.getOriginalFilename();
-      StorageFileDTO storageFile = storageService.store(storageId, file.getInputStream(), file.getSize(), file.getContentType(), originalFilename, domain);
-      responses.add(storageFile.getUrl());
+    try {
+//      String ipAddress = NetWorkUtil.getWifFiIPAddress();
+      String domain = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+      for (MultipartFile file : files) {
+        String originalFilename = file.getOriginalFilename();
+        StorageFileDTO storageFile = storageService.store(storageId, file.getInputStream(), file.getSize(), file.getContentType(), originalFilename, domain);
+        responses.add(storageFile.getUrl());
+      }
+    }catch (UnknownHostException e){
+      e.printStackTrace();
     }
-    return ResponseEntity.ok(responses);
+
+    // 获取服务器信息
+
+
+    return Result.succ(responses);
   }
 
 

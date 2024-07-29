@@ -1,20 +1,30 @@
 package tech.veda.cms.biz.service.impl;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import tech.veda.cms.biz.common.GeneralConfigType;
+import tech.veda.cms.biz.common.Result;
+import tech.veda.cms.biz.entity.GeneralConfig;
+import tech.veda.cms.biz.entity.Person;
 import tech.veda.cms.biz.exception.GeneralConfigException;
 import tech.veda.cms.biz.mapper.GeneralConfigMapper;
-import tech.veda.cms.biz.service.dto.HomePageDTO;
-import tech.veda.cms.biz.entity.GeneralConfig;
 import tech.veda.cms.biz.service.IGeneralConfigService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
+import tech.veda.cms.biz.service.IPersonService;
+import tech.veda.cms.biz.service.dto.*;
+import tech.veda.cms.biz.service.dto.AboutUsQualityItem;
+import tech.veda.cms.biz.service.vo.AboutUsVO;
+import tech.veda.cms.biz.service.vo.BasicInfoVO;
+import tech.veda.cms.biz.service.vo.HomePageVO;
 import tech.veda.cms.common.CommonResultStatus;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -27,15 +37,18 @@ import java.util.Objects;
 @Service
 public class GeneralConfigServiceImpl extends ServiceImpl<GeneralConfigMapper, GeneralConfig> implements IGeneralConfigService {
 
+  @Autowired
+  IPersonService leaderService;
+
   @Override
   public Boolean updateHomePage(HomePageDTO homePageDTO) {
 
-    if(homePageDTO.getIntroductionItems().size() != 3){
-      throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Introduction item size must be 3");
+    if(homePageDTO.getProcessItems().size() != 3){
+      throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Process item size must be 3");
     }
 
-    if(homePageDTO.getProcessItems().size() <= 0 || homePageDTO.getProcessItems().size() > 5){
-      throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Process item size must be between 1 and 5");
+    if(homePageDTO.getIntroductionItems().size() <= 0 || homePageDTO.getIntroductionItems().size() > 5){
+      throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Introduction item size must be between 1 and 5");
     }
     if(homePageDTO.getProductCategoryItems().size() != 6){
       throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Product category item size must be 6");
@@ -48,28 +61,150 @@ public class GeneralConfigServiceImpl extends ServiceImpl<GeneralConfigMapper, G
     }
 
     GeneralConfig homePage = new GeneralConfig();
-
-    try {
-      ObjectMapper objectMapper = new ObjectMapper();
-
-      String data = objectMapper.writeValueAsString(homePageDTO);
-      homePage.setData(data);
-
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
+    String jsonString = JSON.toJSONString(homePageDTO);
+    homePage.setData(jsonString);
 
     homePage.setType(GeneralConfigType.HOME);
     QueryWrapper<GeneralConfig> generalConfigQueryWrapper = new QueryWrapper<>();
     generalConfigQueryWrapper.eq("type", GeneralConfigType.HOME);
-    GeneralConfig oldHomePage = this.getOne(generalConfigQueryWrapper);
-    if(Objects.isNull(oldHomePage)){
-      homePage.setCreateDate(LocalDateTime.now());
+    Optional<GeneralConfig> oldHomePage = this.getOneOpt(generalConfigQueryWrapper);
+    if(oldHomePage.isPresent()){
+      homePage.setId(oldHomePage.get().getId());
     }else {
-      homePage.setId(oldHomePage.getId());
+      homePage.setCreateDate(LocalDateTime.now());
     }
-    this.saveOrUpdate(homePage);
 
-    return null;
+    return this.saveOrUpdate(homePage);
+  }
+
+  @Override
+  public HomePageVO findHomePage() {
+    QueryWrapper<GeneralConfig> generalConfigQueryWrapper = new QueryWrapper<>();
+    generalConfigQueryWrapper.eq("type", GeneralConfigType.HOME);
+    GeneralConfig homePageGeneralConfig = this.getOne(generalConfigQueryWrapper);
+    JSONObject homePageDataJsonObject = JSON.parseObject(homePageGeneralConfig.getData());
+    List<HomeProcessItem> processItems = (List<HomeProcessItem>) homePageDataJsonObject.get("processItems");
+    List<HomeProductionCategoryItem> productCategoryItems = homePageDataJsonObject.getList("productCategoryItems", HomeProductionCategoryItem.class);
+    List<String> clientLogos = (List<String>) homePageDataJsonObject.get("clientLogos");
+    List<HomeIntroductionItem> introductionItems = (List<HomeIntroductionItem>) homePageDataJsonObject.get("introductionItems");
+    List<Integer> leaderIds = (List<Integer>) homePageDataJsonObject.get("leaders");
+    List<Person> leaders = new ArrayList<>();
+    leaderIds.stream().forEach(id -> {
+      Optional<Person> optionalLeader = leaderService.getOptById(id);
+      if(optionalLeader.isPresent()){
+        leaders.add(optionalLeader.get());
+      }
+    });
+
+    HomePageVO homePageVO = new HomePageVO();
+    homePageVO.setProcessItems(processItems);
+    homePageVO.setIntroductionItems(introductionItems);
+    homePageVO.setProductCategoryItems(productCategoryItems);
+    homePageVO.setClientLogos(clientLogos);
+    homePageVO.setLeaders(leaders);
+    return homePageVO;
+  }
+
+  @Override
+  public AboutUsVO findAboutUsPage() {
+    QueryWrapper<GeneralConfig> generalConfigQueryWrapper = new QueryWrapper<>();
+    generalConfigQueryWrapper.eq("type", GeneralConfigType.ABOUT_US);
+    GeneralConfig aboutUsGeneralConfig = this.getOne(generalConfigQueryWrapper);
+    JSONObject aboutUsDataJsonObject = JSON.parseObject(aboutUsGeneralConfig.getData());
+    List<Integer> teamMemberIds =  aboutUsDataJsonObject.getList("teamMembers", Integer.class);
+    List<Person> teamMembers = new ArrayList<>();
+    teamMemberIds.stream().forEach(id -> {
+      Optional<Person> optionalLeader = leaderService.getOptById(id);
+      if(optionalLeader.isPresent()){
+        teamMembers.add(optionalLeader.get());
+      }
+    });
+    List<AboutUsQualityItem> qualityItems = aboutUsDataJsonObject.getList("qualityItems", AboutUsQualityItem.class);
+    String needHelpHeader = aboutUsDataJsonObject.getString("needHelpHeader");
+    String needHelpDesc = aboutUsDataJsonObject.getString("needHelpDesc");
+
+    return AboutUsVO.builder()
+            .teamMembers(teamMembers)
+            .needHelpDesc(needHelpDesc)
+            .needHelpHeader(needHelpHeader)
+            .qualityItems(qualityItems)
+            .build();
+  }
+
+  @Override
+  public Boolean updateAboutUsPage(AboutUsDTO aboutUsDTO) {
+
+    if(aboutUsDTO.getQualityItems().size() != 4){
+      throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Quality item size must be 4");
+    }
+
+    for(AboutUsQualityItem aboutUsQualityItem : aboutUsDTO.getQualityItems()){
+      if(aboutUsQualityItem.getDesc() == null || aboutUsQualityItem.getDesc().isEmpty()){
+        throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Quality item description can't be empty");
+      }
+      if(aboutUsQualityItem.getTitle() == null || aboutUsQualityItem.getTitle().isEmpty()){
+        throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Quality item title can't be empty");
+      }
+      if(aboutUsQualityItem.getImage() == null || aboutUsQualityItem.getImage().isEmpty()){
+        throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Quality item image can't be empty");
+      }
+    }
+    if(aboutUsDTO.getTeamMembers().size() < 1){
+      throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Team member can't be empty");
+    }
+    if(aboutUsDTO.getNeedHelpDesc() == null || aboutUsDTO.getNeedHelpDesc().isEmpty()){
+      throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Need-help-description can't be empty");
+    }
+
+    if(aboutUsDTO.getNeedHelpHeader() == null || aboutUsDTO.getNeedHelpHeader().isEmpty()){
+      throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Need-help-header can't be empty");
+    }
+
+
+    GeneralConfig aboutUsPage = new GeneralConfig();
+
+    String jsonString = JSON.toJSONString(aboutUsDTO);
+    aboutUsPage.setData(jsonString);
+    aboutUsPage.setType(GeneralConfigType.ABOUT_US);
+    QueryWrapper<GeneralConfig> generalConfigQueryWrapper = new QueryWrapper<>();
+    generalConfigQueryWrapper.eq("type", GeneralConfigType.ABOUT_US);
+    Optional<GeneralConfig> oldAboutUsPage = this.getOneOpt(generalConfigQueryWrapper);
+    if(oldAboutUsPage.isPresent()){
+      aboutUsPage.setId(oldAboutUsPage.get().getId());
+    }else {
+      aboutUsPage.setCreateDate(LocalDateTime.now());
+    }
+
+    return this.saveOrUpdate(aboutUsPage);
+  }
+
+  @Override
+  public Boolean updateBasicInfo(BasicInfoDTO basicInfoDTO) {
+
+    GeneralConfig basicInfo = new GeneralConfig();
+
+    String jsonString = JSON.toJSONString(basicInfoDTO);
+    basicInfo.setData(jsonString);
+    basicInfo.setType(GeneralConfigType.BASIC_INFO);
+    QueryWrapper<GeneralConfig> generalConfigQueryWrapper = new QueryWrapper<>();
+    generalConfigQueryWrapper.eq("type", GeneralConfigType.BASIC_INFO);
+    Optional<GeneralConfig> oldBasicInfo = this.getOneOpt(generalConfigQueryWrapper);
+    if(oldBasicInfo.isPresent()){
+      basicInfo.setId(oldBasicInfo.get().getId());
+    }else {
+      basicInfo.setCreateDate(LocalDateTime.now());
+    }
+
+    return this.saveOrUpdate(basicInfo);
+
+  }
+
+  @Override
+  public BasicInfoVO findBasicInfo() {
+    QueryWrapper<GeneralConfig> generalConfigQueryWrapper = new QueryWrapper<>();
+    generalConfigQueryWrapper.eq("type", GeneralConfigType.BASIC_INFO);
+    GeneralConfig basicInfoGeneralConfig = this.getOne(generalConfigQueryWrapper);
+    JSONObject basicInfoDataJsonObject = JSON.parseObject(basicInfoGeneralConfig.getData());
+    return BasicInfoVO.builder().address(basicInfoDataJsonObject.getString("address")).email(basicInfoDataJsonObject.getString("email")).build();
   }
 }
