@@ -37,9 +37,15 @@ public class ProductController {
 
 
   @GetMapping("/detail/{id}")
-  public Result<ProductVO> findProducts(@PathVariable Integer id) {
+  public Result<ProductVO> findProduct(@PathVariable Integer id) {
 
     return Result.succ(productService.findProduct(id));
+  }
+
+  @GetMapping("/detail-cms/{id}")
+  public Result<ProductVO> findProductCMS(@PathVariable Integer id) {
+
+    return Result.succ(productService.findProductCMS(id));
   }
 
 

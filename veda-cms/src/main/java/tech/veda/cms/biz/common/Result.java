@@ -28,7 +28,7 @@ public class Result<T> implements Serializable {
 	}
 
 	public static Result fail(String msg){
-		return fail(400, msg, null);
+		return fail(-1, msg, null);
 	}
 
 	public static<T> Result fail(String msg, T data){

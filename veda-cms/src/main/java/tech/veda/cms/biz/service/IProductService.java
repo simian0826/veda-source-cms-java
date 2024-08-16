@@ -33,6 +33,9 @@ public interface IProductService extends IService<Product> {
    */
   ProductVO findProduct(Integer productId);
 
+  ProductVO findProductCMS(Integer productId);
+
+
   /**
    * create a new product
    * @param ProductCreateRequest

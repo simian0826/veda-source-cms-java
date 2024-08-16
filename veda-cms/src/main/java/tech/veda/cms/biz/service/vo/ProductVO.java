@@ -25,4 +25,5 @@ public class ProductVO {
   private List<String> certificate;
 
   private List<ProductPropertyVO> properties;
+  private List<ProductPropertyVO> additionalProperties;
 }

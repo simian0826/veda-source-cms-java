@@ -109,19 +109,38 @@ public class StorageController {
     return Result.succ(responses);
   }
 
-  @PostMapping("/uploadFiles")
-  public Result<List<String>> uploadFiles(@RequestParam(value = "storageId", required = false) String storageId,
-                                          @RequestParam("files") MultipartFile[] files, HttpServletRequest request) throws IOException {
-    List<String> responses = new ArrayList<>();
+  @PostMapping("/uploadFile")
+  public Result<List<StorageFileDTO>> uploadFile(@RequestParam(value = "storageId", required = false) String storageId,
+                                          @RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
+    List<StorageFileDTO> responses = new ArrayList<>();
 
     try {
 //      String ipAddress = NetWorkUtil.getWifFiIPAddress();
       String domain = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-      for (MultipartFile file : files) {
-        String originalFilename = file.getOriginalFilename();
-        StorageFileDTO storageFile = storageService.store(storageId, file.getInputStream(), file.getSize(), file.getContentType(), originalFilename, domain);
-        responses.add(storageFile.getUrl());
-      }
+      String originalFilename = file.getOriginalFilename();
+      StorageFileDTO storageFile = storageService.store(storageId, file.getInputStream(), file.getSize(), file.getContentType(), originalFilename, domain);
+      responses.add(storageFile);
+    }catch (UnknownHostException e){
+      e.printStackTrace();
+    }
+
+    // 获取服务器信息
+
+
+    return Result.succ(responses);
+  }
+
+  @PostMapping("/uploadFileByAntd")
+  public Result<List<StorageFileDTO>> uploadFileByAntd(@RequestParam(value = "storageId", required = false) String storageId,
+                                                  @RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
+    List<StorageFileDTO> responses = new ArrayList<>();
+
+    try {
+//      String ipAddress = NetWorkUtil.getWifFiIPAddress();
+      String domain = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+      String originalFilename = file.getOriginalFilename();
+      StorageFileDTO storageFile = storageService.store(storageId, file.getInputStream(), file.getSize(), file.getContentType(), originalFilename, domain);
+      responses.add(storageFile);
     }catch (UnknownHostException e){
       e.printStackTrace();
     }

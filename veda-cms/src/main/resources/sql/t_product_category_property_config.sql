@@ -29,7 +29,7 @@ CREATE TABLE `t_product_category_property_config` (
   `update_date` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '1' COMMENT 'Active: 1, Inactive: 0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 ;
 
 -- ----------------------------
 -- Records of t_product_category_property_config

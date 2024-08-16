@@ -11,6 +11,7 @@ import tech.veda.cms.biz.service.dto.AboutUsDTO;
 import tech.veda.cms.biz.service.dto.BasicInfoDTO;
 import tech.veda.cms.biz.service.dto.HomePageDTO;
 import tech.veda.cms.biz.service.vo.AboutUsVO;
+import tech.veda.cms.biz.service.vo.BasicInfoVO;
 import tech.veda.cms.biz.service.vo.HomePageVO;
 import tech.veda.cms.sys.service.SessionService;
 
@@ -58,7 +59,7 @@ public class GeneralConfigController {
   }
 
   @GetMapping("/findBasicInfo")
-  public Result<AboutUsVO> updateBasicInfo() {
+  public Result<BasicInfoVO> updateBasicInfo() {
     return Result.succ(generalConfigService.findBasicInfo());
   }
 

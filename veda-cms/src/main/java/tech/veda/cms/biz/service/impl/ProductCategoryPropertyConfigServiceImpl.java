@@ -38,13 +38,13 @@ public class ProductCategoryPropertyConfigServiceImpl extends ServiceImpl<Produc
     queryProductCategoryWrapper.eq("type", DictType.PRODUCT_CATEGORY);
 
     List<Dict> productCategories = dictService.list(queryProductCategoryWrapper);
-    List<String> productCategoryNames = new ArrayList<>(new HashSet<>(productCategories.stream().map(item -> item.getLabel()).toList()));
+    List<String> productCategoryNames = new ArrayList<>(new HashSet<>(productCategories.stream().map(Dict::getLabel).toList()));
 
     JSONObject result = new JSONObject();
-    productCategoryNames.stream().forEach(productCategoryName -> {
+    productCategoryNames.forEach(productCategoryName -> {
       QueryWrapper<ProductCategoryPropertyConfig> queryProductCategoryConfigWrapper = new QueryWrapper<>();
       queryProductCategoryConfigWrapper.eq("category", productCategoryName);
-      result.put(productCategoryName, this.list(queryProductCategoryConfigWrapper).stream().map(item -> item.getPropertyName()).toList());
+      result.put(productCategoryName, this.list(queryProductCategoryConfigWrapper).stream().map(ProductCategoryPropertyConfig::getPropertyName).toList());
     });
 
     return result;

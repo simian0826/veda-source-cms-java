@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import tech.veda.cms.biz.common.Result;
 import tech.veda.cms.common.ResultStatus;
 import tech.veda.cms.common.BusinessException;
 import tech.veda.cms.common.CommonResultStatus;
@@ -37,13 +38,13 @@ public class ExceptionControllerAdvice {
   private final Logger log = LoggerFactory.getLogger(getClass());
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<Map<String, Object>> handleDefaultErrorView(Exception ex, HttpServletRequest request) {
+  public Result handleDefaultErrorView(Exception ex, HttpServletRequest request) {
     log.error("Handle exception, message={}, requestUrl={}", ex.getMessage(), request.getRequestURI(), ex);
     Map<String, Object> body = new HashMap<>();
     body.put("code", CommonResultStatus.SERVER_ERROR.getCode());
     body.put("message", ex.getMessage());
     body.put("success", false);
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    return Result.fail( ex.getMessage() );
   }
 
   @ExceptionHandler(BusinessException.class)

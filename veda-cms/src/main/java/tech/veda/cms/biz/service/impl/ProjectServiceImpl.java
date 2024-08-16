@@ -74,11 +74,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
   public Boolean updateProject(ProjectUpdateDTO projectUpdateDTO) {
 
 
-    Project oldProject = this.getById(projectUpdateDTO.getId());
-
-    if(Objects.isNull(oldProject)){
-      throw new ProjectException(CommonResultStatus.SERVER_ERROR, "The project is not found which needs to update");
-    }
+    this.getOptById(projectUpdateDTO.getId()).orElseThrow(() -> new ProjectException(CommonResultStatus.SERVER_ERROR, "The project is not found which needs to update"));
 
     if(!projectUpdateDTO.getType().equals(ProjectType.ON_GOING) && !projectUpdateDTO.getType().equals(ProjectType.COMPLETED)){
       throw new ProjectException(CommonResultStatus.SERVER_ERROR, "Project type error");

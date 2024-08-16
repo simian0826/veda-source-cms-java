@@ -63,7 +63,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     Page<Product> page = new Page<>(productListRequest.getPage(), productListRequest.getPageSize());
 
     QueryWrapper<Product> queryProductWrapper = new QueryWrapper<>();
-    if (!productListRequest.getCategory().equals("") && !productListRequest.getCategory().equals(null)){
+    if (!productListRequest.getCategory().isEmpty()){
       queryProductWrapper.eq("category",productListRequest.getCategory());
     }
     IPage<Product> productPage = getBaseMapper().selectPage(page, queryProductWrapper);
@@ -101,7 +101,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     List<ProductVO> productVO2s = new ArrayList<>();
     for (int i = 0; i < productListRequest.getPageSize(); i++){
 
-      String[] imgs = {"y3l5i_porcelain.png", "y3l5i_porcelain.png", "y3l5i_porcelain.png"};
+      String[] imgs = {"http://localhost:8080/veda-source/storage/fetch/y3l5i_porcelain.png", "http://localhost:8080/veda-source/storage/fetch/y3l5i_porcelain.png", "http://localhost:8080/veda-source/storage/fetch/y3l5i_porcelain.png"};
       productVO2s.add(ProductVO.builder()
         .id(1)
         .category("Tiles")
@@ -112,8 +112,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         .properties(null).build());
     }
 
-    PageDTO<ProductVO> result = new PageDTO(productVO2s, this.count(queryProductWrapper));
-    return result;
+    return new PageDTO<>(productVO2s, this.count(queryProductWrapper));
   }
 
   /**
@@ -125,11 +124,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
   @Override
   public ProductVO findProduct(Integer productId) {
 
-    Product product = this.getById(productId);
-    if(Objects.isNull(product)){
-      throw new ProductException(CommonResultStatus.SERVER_ERROR, "Can't find that product");
 
-    }
+    Product product = this.getOptById(productId).orElseThrow(() -> new ProductException(CommonResultStatus.SERVER_ERROR, "Can't find that product"));
 
     QueryWrapper<ProductProperty> queryProductPropertyWrapper = new QueryWrapper<>();
     queryProductPropertyWrapper.eq("product_id", product.getId());
@@ -157,6 +153,55 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
   }
 
+  public ProductVO findProductCMS(Integer productId) {
+
+
+    Product product = this.getOptById(productId).orElseThrow(() -> new ProductException(CommonResultStatus.SERVER_ERROR, "Can't find that product"));
+
+    QueryWrapper<ProductProperty> queryProductPropertyWrapper = new QueryWrapper<>();
+    queryProductPropertyWrapper.eq("product_id", product.getId());
+    queryProductPropertyWrapper.eq("type",  ProductPropertyType.ORIGINAL);
+    List<ProductPropertyVO> productPropertyVOs = productPropertyService.list(queryProductPropertyWrapper)
+      .stream().map(productProperty -> {
+        QueryWrapper<ProductPropertyItem> queryProductPropertyItemWrapper = new QueryWrapper<>();
+        queryProductPropertyItemWrapper.eq("product_property_id", productProperty.getId());
+        List<ProductPropertyItemVO> ProductPropertyItemVOs = productPropertyItemService.list(queryProductPropertyItemWrapper)
+          .stream().map(productPropertyItem ->
+            ProductPropertyItemVO.builder()
+              .label(productPropertyItem.getLabel())
+              .value(productPropertyItem.getValue()).build()).toList();
+        return ProductPropertyVO.builder().name(productProperty.getName()).items(ProductPropertyItemVOs).build();
+      }).toList();
+
+    QueryWrapper<ProductProperty> queryProductAdditionalPropertyWrapper = new QueryWrapper<>();
+    queryProductAdditionalPropertyWrapper.eq("product_id", product.getId());
+    queryProductAdditionalPropertyWrapper.eq("type",  ProductPropertyType.ADDITIONAL);
+    List<ProductPropertyVO> productAdditionalPropertyVOs = productPropertyService.list(queryProductPropertyWrapper)
+      .stream().map(productProperty -> {
+        QueryWrapper<ProductPropertyItem> queryProductPropertyItemWrapper = new QueryWrapper<>();
+        queryProductPropertyItemWrapper.eq("product_property_id", productProperty.getId());
+        List<ProductPropertyItemVO> ProductPropertyItemVOs = productPropertyItemService.list(queryProductPropertyItemWrapper)
+          .stream().map(productPropertyItem ->
+            ProductPropertyItemVO.builder()
+              .label(productPropertyItem.getLabel())
+              .value(productPropertyItem.getValue()).build()).toList();
+        return ProductPropertyVO.builder().name(productProperty.getName()).items(ProductPropertyItemVOs).build();
+      }).toList();
+
+    return ProductVO.builder()
+      .id(product.getId())
+      .category(product.getCategory())
+      .name(product.getName())
+      .description(product.getDescription())
+      .imgs(Arrays.asList(product.getImgs().split(",")))
+      .certificate(Arrays.asList(product.getCertificate().split(",")))
+      .properties(productPropertyVOs)
+      .additionalProperties(productAdditionalPropertyVOs)
+      .build();
+
+
+  }
+
 
   @Override
   public Boolean createProduct(@NotNull ProductCreateRequestDTO productCreateRequest) {
@@ -168,7 +213,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     product.setName(productCreateRequest.getName());
 
-    if(!dictService.list(queryProductCategoryWrapper).stream().map(item -> item.getValue()).toList().contains(productCreateRequest.getCategory())){
+    if(!dictService.list(queryProductCategoryWrapper).stream().map(Dict::getValue).toList().contains(productCreateRequest.getCategory())){
       throw new ProductException(CommonResultStatus.SERVER_ERROR, "Invalid value of product category");
     }
     product.setCategory(productCreateRequest.getCategory());
@@ -183,10 +228,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     queryProductCategoryPropertyConfigWrapper.eq("category", product.getCategory());
 
     List<String> productPropertyNameList = productCategoryPropertyConfigService.list(queryProductCategoryPropertyConfigWrapper).stream().map(item -> item.getPropertyName()).toList();
-    if(productCreateRequest.getProperties() != null && productCreateRequest.getProperties().size() > 0){
+    if(productCreateRequest.getProperties() != null && !productCreateRequest.getProperties().isEmpty()){
       productCreateRequest.getProperties().forEach(productPropertyDTO -> this.saveOrUpdateProductProperty(productPropertyDTO, product, productPropertyNameList, "save", ProductPropertyType.ORIGINAL));
     }
-    if(productCreateRequest.getAdditionalProperties() != null && productCreateRequest.getAdditionalProperties().size() > 0){
+    if(productCreateRequest.getAdditionalProperties() != null && !productCreateRequest.getAdditionalProperties().isEmpty()){
       productCreateRequest.getAdditionalProperties().forEach(productPropertyDTO -> this.saveOrUpdateProductProperty(productPropertyDTO, product, productPropertyNameList, "save", ProductPropertyType.ADDITIONAL));
 
     }
@@ -209,7 +254,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     product.setId(productUpdateRequest.getId());
     product.setName(productUpdateRequest.getName());
 
-    if(!dictService.list(queryProductCategoryWrapper).stream().map(item -> item.getValue()).toList().contains(productUpdateRequest.getCategory())){
+    if(!dictService.list(queryProductCategoryWrapper).stream().map(Dict::getValue).toList().contains(productUpdateRequest.getCategory())){
       throw new ProductException(CommonResultStatus.SERVER_ERROR, "Invalid value of product category");
     }
 
@@ -230,10 +275,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     List<String> productPropertyNameList =  productCategoryPropertyConfigService.list(queryProductCategoryPropertyConfigWrapper).stream().map(item -> item.getPropertyName()).toList();
 
 
-    if(productUpdateRequest.getProperties() != null && productUpdateRequest.getProperties().size() > 0){
+    if(productUpdateRequest.getProperties() != null && !productUpdateRequest.getProperties().isEmpty()){
       productUpdateRequest.getProperties().forEach(productPropertyDTO -> this.saveOrUpdateProductProperty(productPropertyDTO, product, productPropertyNameList, "update", ProductPropertyType.ORIGINAL));
     }
-    if(productUpdateRequest.getAdditionalProperties() != null && productUpdateRequest.getAdditionalProperties().size() > 0){
+    if(productUpdateRequest.getAdditionalProperties() != null && !productUpdateRequest.getAdditionalProperties().isEmpty()){
       productUpdateRequest.getAdditionalProperties().forEach(productPropertyDTO -> this.saveOrUpdateProductProperty(productPropertyDTO, product, productPropertyNameList, "update", ProductPropertyType.ADDITIONAL));
 
     }
@@ -320,7 +365,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     productPropertyItem.setLabel(productPropertyItemDTO.getLabel());
     productPropertyItem.setValue(productPropertyItemDTO.getValue());
     productPropertyItem.setCreateDate(LocalDateTime.now());
-
     if(!productPropertyItemService.save(productPropertyItem)){
       throw new ProductException(CommonResultStatus.SERVER_ERROR, "Save product property error");
     }

@@ -32,7 +32,7 @@ CREATE TABLE `t_product` (
   `imgs` varchar(255) DEFAULT NULL,
   `certificate` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ;
 
 -- ----------------------------
 -- Records of t_product

@@ -47,7 +47,7 @@ public class GeneralConfigServiceImpl extends ServiceImpl<GeneralConfigMapper, G
       throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Process item size must be 3");
     }
 
-    if(homePageDTO.getIntroductionItems().size() <= 0 || homePageDTO.getIntroductionItems().size() > 5){
+    if(homePageDTO.getIntroductionItems().isEmpty() || homePageDTO.getIntroductionItems().size() > 5){
       throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Introduction item size must be between 1 and 5");
     }
     if(homePageDTO.getProductCategoryItems().size() != 6){
@@ -89,11 +89,9 @@ public class GeneralConfigServiceImpl extends ServiceImpl<GeneralConfigMapper, G
     List<HomeIntroductionItem> introductionItems = (List<HomeIntroductionItem>) homePageDataJsonObject.get("introductionItems");
     List<Integer> leaderIds = (List<Integer>) homePageDataJsonObject.get("leaders");
     List<Person> leaders = new ArrayList<>();
-    leaderIds.stream().forEach(id -> {
+    leaderIds.forEach(id -> {
       Optional<Person> optionalLeader = leaderService.getOptById(id);
-      if(optionalLeader.isPresent()){
-        leaders.add(optionalLeader.get());
-      }
+      optionalLeader.ifPresent(leaders::add);
     });
 
     HomePageVO homePageVO = new HomePageVO();
@@ -113,11 +111,9 @@ public class GeneralConfigServiceImpl extends ServiceImpl<GeneralConfigMapper, G
     JSONObject aboutUsDataJsonObject = JSON.parseObject(aboutUsGeneralConfig.getData());
     List<Integer> teamMemberIds =  aboutUsDataJsonObject.getList("teamMembers", Integer.class);
     List<Person> teamMembers = new ArrayList<>();
-    teamMemberIds.stream().forEach(id -> {
+    teamMemberIds.forEach(id -> {
       Optional<Person> optionalLeader = leaderService.getOptById(id);
-      if(optionalLeader.isPresent()){
-        teamMembers.add(optionalLeader.get());
-      }
+      optionalLeader.ifPresent(teamMembers::add);
     });
     List<AboutUsQualityItem> qualityItems = aboutUsDataJsonObject.getList("qualityItems", AboutUsQualityItem.class);
     String needHelpHeader = aboutUsDataJsonObject.getString("needHelpHeader");
@@ -149,7 +145,7 @@ public class GeneralConfigServiceImpl extends ServiceImpl<GeneralConfigMapper, G
         throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Quality item image can't be empty");
       }
     }
-    if(aboutUsDTO.getTeamMembers().size() < 1){
+    if(aboutUsDTO.getTeamMembers().isEmpty()){
       throw new GeneralConfigException(CommonResultStatus.SERVER_ERROR, "Team member can't be empty");
     }
     if(aboutUsDTO.getNeedHelpDesc() == null || aboutUsDTO.getNeedHelpDesc().isEmpty()){

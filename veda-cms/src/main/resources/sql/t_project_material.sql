@@ -32,7 +32,7 @@ CREATE TABLE `t_project_material` (
   `update_date` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '1' COMMENT 'Active: 1, Inactive: 0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 ;
 
 -- ----------------------------
 -- Records of t_project_material

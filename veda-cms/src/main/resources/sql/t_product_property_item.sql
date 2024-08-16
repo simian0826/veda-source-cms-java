@@ -31,7 +31,7 @@ CREATE TABLE `t_product_property_item` (
   `value` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_property_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 ;
 
 -- ----------------------------
 -- Records of t_product_property_item

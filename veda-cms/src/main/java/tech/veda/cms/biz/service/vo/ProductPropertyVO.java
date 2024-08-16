@@ -12,10 +12,7 @@ import java.util.List;
 @Data
 public class ProductPropertyVO {
 
-
   private String name;
-
-  private String category;
 
   private List<ProductPropertyItemVO> items;
 }
