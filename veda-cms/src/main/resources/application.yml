@@ -1,6 +1,7 @@
 spring:
   main:
     allow-bean-definition-overriding: true
+    allow-circular-references: true
   servlet:
     multipart:
       max-file-size: 10MB

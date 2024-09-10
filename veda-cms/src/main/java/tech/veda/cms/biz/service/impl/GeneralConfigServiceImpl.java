@@ -10,15 +10,15 @@ import tech.veda.cms.biz.common.GeneralConfigType;
 import tech.veda.cms.biz.common.Result;
 import tech.veda.cms.biz.entity.GeneralConfig;
 import tech.veda.cms.biz.entity.Person;
+import tech.veda.cms.biz.entity.Product;
 import tech.veda.cms.biz.exception.GeneralConfigException;
 import tech.veda.cms.biz.mapper.GeneralConfigMapper;
 import tech.veda.cms.biz.service.IGeneralConfigService;
 import tech.veda.cms.biz.service.IPersonService;
+import tech.veda.cms.biz.service.IProductService;
 import tech.veda.cms.biz.service.dto.*;
 import tech.veda.cms.biz.service.dto.AboutUsQualityItem;
-import tech.veda.cms.biz.service.vo.AboutUsVO;
-import tech.veda.cms.biz.service.vo.BasicInfoVO;
-import tech.veda.cms.biz.service.vo.HomePageVO;
+import tech.veda.cms.biz.service.vo.*;
 import tech.veda.cms.common.CommonResultStatus;
 
 import java.time.LocalDateTime;
@@ -39,6 +39,9 @@ public class GeneralConfigServiceImpl extends ServiceImpl<GeneralConfigMapper, G
 
   @Autowired
   IPersonService leaderService;
+
+  @Autowired
+  IProductService productService;
 
   @Override
   public Boolean updateHomePage(HomePageDTO homePageDTO) {
@@ -86,7 +89,20 @@ public class GeneralConfigServiceImpl extends ServiceImpl<GeneralConfigMapper, G
     List<HomeProcessItem> processItems = (List<HomeProcessItem>) homePageDataJsonObject.get("processItems");
     List<HomeProductionCategoryItem> productCategoryItems = homePageDataJsonObject.getList("productCategoryItems", HomeProductionCategoryItem.class);
     List<String> clientLogos = (List<String>) homePageDataJsonObject.get("clientLogos");
-    List<HomeIntroductionItem> introductionItems = (List<HomeIntroductionItem>) homePageDataJsonObject.get("introductionItems");
+    List<HomeIntroductionItem> introductionItems = homePageDataJsonObject.getList("introductionItems", HomeIntroductionItem.class);
+    List<HomeIntroductionItemVO> introductionItemsVOS = introductionItems.stream().map(item -> {
+      ProductVO productVO = productService.findProductCMS(item.getProductId());
+      return  HomeIntroductionItemVO.builder()
+        .image(item.getImage())
+        .title(item.getTitle())
+        .subTitle(item.getTitle())
+        .product(productVO)
+        .description(item.getDescription())
+        .infoRight(item.getInfoRight())
+        .infoLeft(item.getInfoLeft())
+        .build();
+
+    }).toList();
     List<Integer> leaderIds = (List<Integer>) homePageDataJsonObject.get("leaders");
     List<Person> leaders = new ArrayList<>();
     leaderIds.forEach(id -> {
@@ -96,7 +112,7 @@ public class GeneralConfigServiceImpl extends ServiceImpl<GeneralConfigMapper, G
 
     HomePageVO homePageVO = new HomePageVO();
     homePageVO.setProcessItems(processItems);
-    homePageVO.setIntroductionItems(introductionItems);
+    homePageVO.setIntroductionItems(introductionItemsVOS);
     homePageVO.setProductCategoryItems(productCategoryItems);
     homePageVO.setClientLogos(clientLogos);
     homePageVO.setLeaders(leaders);

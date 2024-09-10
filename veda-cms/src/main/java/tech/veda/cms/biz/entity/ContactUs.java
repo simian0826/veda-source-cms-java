@@ -8,7 +8,7 @@ import lombok.Setter;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Bruno
@@ -25,7 +25,7 @@ public class ContactUs extends BaseEntity {
 
     private String email;
 
-    private String mobile;
+    private String subject;
 
     private String message;
 }

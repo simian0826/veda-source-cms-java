@@ -16,8 +16,3 @@ public class HomeIntroductionItem {
   private Integer productId;
 }
 
-@Data
-class IntroductionInfo {
-  private String info;
-  private String supplementary;
-}

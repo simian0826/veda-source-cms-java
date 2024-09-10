@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import tech.veda.cms.biz.mapper.ProductMapper;
 import tech.veda.cms.biz.mapper.ProductPropertyMapper;
 import tech.veda.cms.biz.service.*;
 import tech.veda.cms.biz.service.dto.*;
+import tech.veda.cms.biz.service.vo.HomePageVO;
 import tech.veda.cms.biz.service.vo.ProductPropertyItemVO;
 import tech.veda.cms.biz.service.vo.ProductPropertyVO;
 import tech.veda.cms.biz.service.vo.ProductVO;
@@ -54,6 +56,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
   @Autowired
   IProductCategoryPropertyConfigService productCategoryPropertyConfigService;
+
+  @Autowired
+  IGeneralConfigService generalConfigService;
 
 
   @Override
@@ -112,7 +117,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         .properties(null).build());
     }
 
-    return new PageDTO<>(productVO2s, this.count(queryProductWrapper));
+    return new PageDTO<>(productVOs, this.count(queryProductWrapper));
   }
 
   /**
@@ -176,7 +181,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     QueryWrapper<ProductProperty> queryProductAdditionalPropertyWrapper = new QueryWrapper<>();
     queryProductAdditionalPropertyWrapper.eq("product_id", product.getId());
     queryProductAdditionalPropertyWrapper.eq("type",  ProductPropertyType.ADDITIONAL);
-    List<ProductPropertyVO> productAdditionalPropertyVOs = productPropertyService.list(queryProductPropertyWrapper)
+    List<ProductPropertyVO> productAdditionalPropertyVOs = productPropertyService.list(queryProductAdditionalPropertyWrapper)
       .stream().map(productProperty -> {
         QueryWrapper<ProductPropertyItem> queryProductPropertyItemWrapper = new QueryWrapper<>();
         queryProductPropertyItemWrapper.eq("product_property_id", productProperty.getId());
@@ -194,7 +199,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
       .name(product.getName())
       .description(product.getDescription())
       .imgs(Arrays.asList(product.getImgs().split(",")))
-      .certificate(Arrays.asList(product.getCertificate().split(",")))
+      .certificate(!product.getCertificate().isEmpty() ? Arrays.asList(product.getCertificate().split(",")) : null)
       .properties(productPropertyVOs)
       .additionalProperties(productAdditionalPropertyVOs)
       .build();
@@ -287,6 +292,17 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
   @Override
   public Boolean deleteProduct(Integer id) {
+    try {
+      HomePageVO homePageVO = generalConfigService.findHomePage();
+
+      List<Integer> productIds = homePageVO.getIntroductionItems().stream().map(item -> item.getProduct().getId()).toList();
+      if(productIds.contains(id)){
+        throw new ProductException(CommonResultStatus.SERVER_ERROR, "The product is in use in home page introduction, please remove it first");
+      }
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+
     QueryWrapper<ProductProperty> queryProductPropertyWrapper = new QueryWrapper<>();
     queryProductPropertyWrapper.eq("product_id", id);
     List<ProductProperty> productProperties = productPropertyService.list(queryProductPropertyWrapper);

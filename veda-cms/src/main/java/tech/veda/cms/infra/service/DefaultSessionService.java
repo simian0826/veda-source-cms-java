@@ -39,11 +39,11 @@ public class DefaultSessionService implements SessionService {
   @Override
   public Result<UserinfoDTO> login(String username, String password) {
     UserCredential credential = userCredentialRepository.findCredential(username, UserCredential.IdentityType.PASSWORD)
-      .orElseThrow(() -> new UserException(CommonResultStatus.UNAUTHORIZED, "密码不正确"));
+      .orElseThrow(() -> new UserException(CommonResultStatus.UNAUTHORIZED, "Username or password is incorrect"));
     if (credential.doCredentialMatch(password)) {
       User user = credential.getUser();
       if (user.isLocked()) {
-        throw new UserException(CommonResultStatus.UNAUTHORIZED, "用户已经停用，请与管理员联系");
+        throw new UserException(CommonResultStatus.UNAUTHORIZED, "This user does not exist");
       }
       String token = UUID.randomUUID().toString().replace("-", "");
       UserinfoDTO userinfo = new UserinfoDTO(token, user.getId(), user.getUsername(), user.getAvatar(), new UserinfoDTO.Credential(credential.getIdentifier(), credential.getIdentityType()), user.findPermissions());
@@ -52,7 +52,9 @@ public class DefaultSessionService implements SessionService {
       DomainEventPublisher.instance().publish(new UserLoggedIn(userinfo, getClientIP()));
       return Result.succ(userinfo);
     } else {
-      throw new UserException(CommonResultStatus.UNAUTHORIZED, "密码不正确");
+      return Result.fail("Username or password is incorrect!");
+
+//      throw new UserException(CommonResultStatus.UNAUTHORIZED, "Username or password is incorrect");
     }
   }
 
@@ -85,5 +87,22 @@ public class DefaultSessionService implements SessionService {
   @Override
   public void refresh() {
     sessionManager.refresh();
+  }
+
+  @Override
+  public Result<Boolean> changePassword(String username, String oldPassword, String newPassword) {
+    UserCredential credential = userCredentialRepository.findCredential(username, UserCredential.IdentityType.PASSWORD)
+      .orElseThrow(() -> new UserException(CommonResultStatus.UNAUTHORIZED, "Password is incorrect"));
+    if (!credential.doCredentialMatch(oldPassword)) {
+      return Result.fail("Password is incorrect");
+
+    }
+    String newPasswordEncrypt = credential.passwordEncrypt(newPassword);
+    int id = userCredentialRepository.changePassword(username, newPasswordEncrypt);
+    if(id == 1){
+      return Result.succ(true);
+    }else {
+      return Result.fail("Change password failed");
+    }
   }
 }

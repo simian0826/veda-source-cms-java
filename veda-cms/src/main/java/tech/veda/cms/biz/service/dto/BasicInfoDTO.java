@@ -7,8 +7,8 @@ import lombok.Data;
 
 @Data
 public class BasicInfoDTO {
-  @Email(message = "Email should be valid")
+  @Email(message = "Email should not be valid")
   private String email;
-  @NotEmpty(message = "Address should be empty")
+  @NotEmpty(message = "Address should not be empty")
   private String address;
 }

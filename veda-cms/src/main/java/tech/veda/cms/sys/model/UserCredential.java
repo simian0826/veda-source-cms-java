@@ -46,9 +46,19 @@ public class UserCredential extends BaseEntity {
         return false;
       }
     } catch (NoSuchAlgorithmException e) {
-      throw new BusinessException(CommonResultStatus.FAIL, "密码加密失败：" + e.getMessage());
+      throw new BusinessException(CommonResultStatus.FAIL, "Encrypt password failed：" + e.getMessage());
     }
     return true;
+  }
+
+  public String passwordEncrypt(String password) {
+
+    try {
+      return SecurityUtil.md5(identifier, password);
+
+    } catch (NoSuchAlgorithmException e) {
+      throw new BusinessException(CommonResultStatus.FAIL, "Encrypt password failed：" + e.getMessage());
+    }
   }
 
   public enum IdentityType {

@@ -2,6 +2,7 @@ package tech.veda.cms.sys.service;
 
 import org.springframework.stereotype.Service;
 import tech.veda.cms.biz.common.Result;
+import tech.veda.cms.controller.LoginController;
 import tech.veda.cms.sys.service.dto.UserinfoDTO;
 
 /**
@@ -19,5 +20,9 @@ public interface SessionService {
   UserinfoDTO getLoginUserInfo(String token);
 
   void refresh();
+
+  Result<Boolean> changePassword(String username, String oldPassword, String newPassword);
+
+
 
 }

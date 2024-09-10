@@ -79,7 +79,7 @@ public class EmailUtil {
       Context context = new Context();
       context.setVariable("name", contactUsDTO.getName());
       context.setVariable("email", contactUsDTO.getEmail());
-      context.setVariable("mobile", contactUsDTO.getMobile());
+      context.setVariable("subject", contactUsDTO.getSubject());
       context.setVariable("message", contactUsDTO.getMessage());
       String emailContent = templateEngine.process("emailTemplate", context);
       messageBodyPart.setContent(emailContent, "text/html;charset=UTF-8");

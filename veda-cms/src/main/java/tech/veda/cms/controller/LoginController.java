@@ -38,13 +38,28 @@ public class LoginController {
 
   @SecurityRequirement(name = "bearerAuth")
   @GetMapping("/userinfo")
-  public ResponseEntity<UserinfoDTO> userInfo(HttpServletRequest request) {
+  public Result<UserinfoDTO> userInfo(HttpServletRequest request) {
     String token = request.getHeader("Authorization").replace("Bearer", "").trim();
-    return ResponseEntity.ok(sessionService.getLoginUserInfo(token));
+    return Result.succ(sessionService.getLoginUserInfo(token));
   }
 
   record LoginRequest(@NotBlank String username, @NotBlank String password) {
   }
+
+
+
+  @PostMapping("/changePassword")
+  public Result<Boolean> changePassword(HttpServletRequest request, @RequestBody @Valid ChangePasswordParams params) {
+
+    String token = request.getHeader("Authorization").replace("Bearer", "").trim();
+    UserinfoDTO userinfo = sessionService.getLoginUserInfo(token);
+    return sessionService.changePassword(userinfo.username(), params.oldPassword, params.newPassword);
+  }
+
+  record ChangePasswordParams(@NotBlank String oldPassword, @NotBlank String newPassword) {
+  }
+
+
 
 
 }

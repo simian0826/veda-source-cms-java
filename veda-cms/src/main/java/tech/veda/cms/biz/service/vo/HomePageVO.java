@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Data
 public class HomePageVO {
-  private List<HomeIntroductionItem> introductionItems;
+  private List<HomeIntroductionItemVO> introductionItems;
   private List<HomeProcessItem> processItems;
   private List<HomeProductionCategoryItem> productCategoryItems;
   private List<Person> leaders;
