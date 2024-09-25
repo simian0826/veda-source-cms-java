@@ -130,6 +130,8 @@ public class StorageServiceImpl implements StorageService {
     String url = storage.getUrl(key);
     StorageFileDTO dto = new StorageFileDTO();
     BeanUtils.copyProperties(storageFile, dto);
+//    dto.setUrl(domain + "/" + url);
+    dto.setUrl(url);
     return dto;
   }
 
@@ -192,5 +194,3 @@ public class StorageServiceImpl implements StorageService {
   }
 
 }
-
-
