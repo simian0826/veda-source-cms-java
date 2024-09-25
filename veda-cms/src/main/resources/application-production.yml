@@ -2,6 +2,6 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://52.14.31.69:53306/veda_source?useUnicode=true&useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://172.31.18.26:53306/veda_source?useUnicode=true&useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true
       username: root
       password: itspwd6tfc^YHN
