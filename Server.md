@@ -34,11 +34,10 @@ docker stop huari-nginx && docker rm huari-nginx
 docker run  --name huari-nginx -p 80:80 -p 443:443 -d huari/cms-be-front:v1.0
 
 cd ~/projects/huari-pc/
-docker build -f Dockerfile -t huari/huari-www:v1.0 .
-docker stop huari-www && docker rm huari-www
-docker run  --name huari-www -p 58081:80 -d huari/huari-www:v1.0
-
-docker run  --name huari-prerender -p 53000:3000 -d konghangdocker/prerender:v1.0
+sudo docker build . -t veda-source/website:v1.0
+sudo docker stop website 
+sudo docker rm website
+sudo docker run --name website -p 80:80 -d veda-source/website:v1.0
 
 ```
 
